@@ -1,7 +1,7 @@
 services:
   prometheus:
     image: prom/prometheus
-    container_name: prometheus-testing
+    container_name: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
@@ -15,7 +15,7 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor-testing
+    container_name: cadvisor
     ports:
       - 8080:8080
     volumes:
@@ -36,4 +36,4 @@ services:
       - 6379:6379
 
 volumes:
-  prom_data: # Exposes Redis on port 6379.
+  prom_data: # Exposes main program container on port 6379.
