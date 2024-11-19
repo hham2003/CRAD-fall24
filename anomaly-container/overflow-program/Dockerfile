@@ -1,10 +1,13 @@
 FROM gcc:latest
 
-WORKDIR /prog
+COPY read-with-gets.c /read-with-gets.c
 
-COPY . /prog
+RUN gcc -o read-data read-with-gets.c -std=c99
 
-RUN gcc -o read-data read-data.c
+COPY data.txt /data.txt
 
-CMD ["./read-data"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
 
