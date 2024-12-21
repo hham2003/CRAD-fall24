@@ -4,11 +4,12 @@ import pandas as pd
 
 prom = PrometheusConnect(url="http://localhost:9090", disable_ssl=True)
 
-metric_query = "container_cpu_usage_seconds_total"  
-start_time = datetime.datetime(2024, 11, 3)  
-end_time = datetime.datetime(2024, 11, 4)   
-step = "300s"  
+metric_query = "container_cpu_usage_seconds_total"  # PromQL query
+start_time = datetime.datetime(2024, 11, 3)    # start of time-period to scrape metrics from
+end_time = datetime.datetime(2024, 11, 4)    # end of time-period
+step = "300s"    # timestep between scraped metrics (minimum 10s)
 
+# Execute the query
 metric_data = prom.custom_query_range(
     query=metric_query,
     start_time=start_time,
@@ -16,6 +17,7 @@ metric_data = prom.custom_query_range(
     step=step
 )
 
+# Convert scraped metrics into a data frame
 rows = []
 for result in metric_data:
     metric = result["metric"]
@@ -26,8 +28,13 @@ for result in metric_data:
             **metric,
             "value": float(value[1])
         })
-
 df = pd.DataFrame(rows)
+
+# Filer results for vulnerable program container ID
+container_ID_regex = "2f1a5"    # container ID is found in Docker desktop app
+df = df[df["id"].str.contains(container_ID_regex)]
+
+# Export scraped metrics to CSV
 df.to_csv("prometheus_metrics.csv", index=False)
 
 print("CSV imported")
